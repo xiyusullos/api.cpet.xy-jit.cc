@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 
+use Log;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -17,10 +19,11 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
+        // AuthorizationException::class,
         HttpException::class,
-        ModelNotFoundException::class,
+        // ModelNotFoundException::class,
         ValidationException::class,
+        \E::class,
     ];
 
     /**
@@ -45,6 +48,52 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        return parent::render($request, $e);
+        // return parent::render($request, $e);
+
+        if ($e instanceof \E) {
+            $response = [
+                'code' => $e->getCode(),
+                'response' => $e->getExtra(),
+                // 'from' => 'Handler',
+            ];
+        }
+        elseif ($e instanceof ValidationException) {
+            $response = [
+                'code' => 1001,
+                // 'response' => json_decode($e->getMessage()),
+            ];
+        }
+        // elseif ($e instanceof \App\Errors\ValidationError) {
+        //     $response = [
+        //         'code' => 1001,
+        //         'response' => json_decode($e->getMessage()),
+        //     ];
+        // }
+        elseif ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            $response = [
+                'code' => 1002,
+                'response' => $e->getMessage(),
+            ];
+        }
+
+        elseif ($e instanceof \Exception) {
+            $response = [
+                'code' => 9999,
+                'response' => $e->getMessage(),
+            ];
+
+            // $title = $request->getClientIp()
+            //     .' '.$_SERVER['REQUEST_METHOD']
+            //     .' '.$_SERVER['REQUEST_URI']
+            //     ;
+            // $log = [
+            //     'status' => 200,
+            //     'content' => $response,
+            // ];
+            // Log::error($title, $log);
+        }
+
+        return (new \Illuminate\Http\Response($response, 200));
+        // return response($response, 400);
     }
 }
