@@ -14,12 +14,14 @@ class SmsTransformer extends Fractal\TransformerAbstract
      */
     public function transform(Sms $sms)
     {
-        return [
-            'id' => $sms->id,
-            'phone' => $sms->phone,
+        $template = [
+            // 'id' => $sms->id,
+            // 'phone' => $sms->phone,
             'code' => $sms->code,
             'expiration' => $sms->expiration,
             'token' => $sms->token,
         ];
+
+        return $template;
     }
 }

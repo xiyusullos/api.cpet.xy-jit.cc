@@ -18,6 +18,19 @@ class BeforeMiddleware
     public function handle($request, Closure $next)
     {
         // Perform action
+        if (!$request->isJson()) {
+            return [
+                'code' => 1001,
+                'error' => 'Missing "Content-Type: application/json" header.',
+            ];
+        }
+
+        if (!$request->wantsJson()) {
+            return [
+                'code' => 1001,
+                'error' => 'Missing "Accept: application/json" header.',
+            ];
+        }
 
         return $next($request);
     }

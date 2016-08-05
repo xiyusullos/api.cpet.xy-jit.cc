@@ -16,17 +16,31 @@ use App\Transformers\AccountTransformer;
 
 class AccountController extends Controller
 {
-    // 注册
+    // 01.账户注册
     public function register(Request $request)
     {
         $rules = [
-            'username' => 'required',
+            'username' => 'required|phone',
             'password' => 'required',
             'sms_code' => 'required',
             'sms_token' => 'required',
         ];
         $this->validate($request, $rules);
 
+        $account = Account::where('username', $request->input('username'))
+            ->first();
+        if ($account !== null) {
+            // 该账户已注册
+            throw new \ApiError(20101);
+        }
+        $sms = Sms::where('token', $request->input('sms_token'))
+            ->where('code', $request->input('sms_code'))
+            ->whereRaw('UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(created_at) < expiration')
+            ->first();
+        if ($sms === null) {
+            // 短信验证码错误
+            throw new \ApiError(20102);
+        }
 
         DB::beginTransaction();
         $user = new User();
@@ -45,7 +59,7 @@ class AccountController extends Controller
         return $this->constructData($account, new AccountTransformer);
     }
 
-    // 登入
+    // 02.账户登入
     public function logIn(Request $request)
     {
         $rules = [
@@ -66,9 +80,12 @@ class AccountController extends Controller
         return $this->constructData($account, new AccountTransformer);
     }
 
-    // 登出
+    // 03.账户登出
     public function logOut(Request $request)
     {
+        $rules = [
+            'token' => 'required',
+        ];
         $validator = Validator::make($request->all(), [
             'token' => 'required',
         ]);

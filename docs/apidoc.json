@@ -1,0 +1,46 @@
+{
+    "name": "优和萌宠APIs文档",
+    "version": "1.0.0",
+    "description": "本文档供APP端查看，安卓开发人员参考。",
+    "title": "优和萌宠APIs",
+    "url" : "http://api.cpet.xy-jit.cc",
+    "template": {
+        "forceLanguage": "zh-cn",
+        "withCompare": true,
+        "withGenerator": false
+    },
+    "header": {
+        "title": "API数据格式约定",
+        "filename": "header.md"
+    },
+    "footer": {
+        "title": "错误代码说明",
+        "filename": "footer.md"
+    },
+    "order": [
+        "post_apis",
+
+        "post_sms_getSms",
+        "post_sms_verifySms",
+
+        "post_account_register",
+        "post_account_logIn",
+        "post_account_forgotPassword",
+        "post_account_logOut",
+        "post_account_view",
+        "post_account_update",
+
+        "post_device_models",
+        "post_device_bind_query",
+        "post_device_bind",
+        "post_device_bind_verify",
+        "post_device_bind_confirm",
+        "post_device_unbind",
+        "post_device_share",
+        "post_device_bindList",
+
+        "post_qrcode_generate",
+        "post_qrcode_check"
+
+    ]
+}

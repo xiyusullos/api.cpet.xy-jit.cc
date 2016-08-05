@@ -53,33 +53,32 @@ class Handler extends ExceptionHandler
         if ($e instanceof \E) {
             $response = [
                 'code' => $e->getCode(),
-                'response' => $e->getExtra(),
+                'data' => $e->getExtra(),
                 // 'from' => 'Handler',
             ];
         }
-        elseif ($e instanceof ValidationException) {
+        elseif ($e instanceof \App\Errors\ValidationError) {
             $response = [
                 'code' => 1001,
-                // 'response' => json_decode($e->getMessage()),
+                'data' => json_decode($e->getMessage()),
             ];
         }
-        // elseif ($e instanceof \App\Errors\ValidationError) {
-        //     $response = [
-        //         'code' => 1001,
-        //         'response' => json_decode($e->getMessage()),
-        //     ];
-        // }
+        elseif ($e instanceof \App\Errors\ApiError) {
+            $response = [
+                'code' => $e->getCode(),
+            ];
+        }
         elseif ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
             $response = [
                 'code' => 1002,
-                'response' => $e->getMessage(),
+                'data' => $e->getMessage(),
             ];
         }
 
         elseif ($e instanceof \Exception) {
             $response = [
                 'code' => 9999,
-                'response' => $e->getMessage(),
+                'data' => $e->getMessage(),
             ];
 
             // $title = $request->getClientIp()
